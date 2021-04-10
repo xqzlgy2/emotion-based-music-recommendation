@@ -5,7 +5,6 @@ import uuid
 from sys import stdout
 
 import cv2
-import dlib
 import numpy as np
 import spotipy
 import torch
@@ -13,10 +12,9 @@ from flask import Flask, render_template, session, request, redirect
 from flask_session.__init__ import Session
 from flask_socketio import SocketIO, emit
 from scipy.special import softmax
-from torchvision import transforms
 
-from emonet.emonet.data_augmentation import DataAugmentor
-from emonet.emonet.models import EmoNet
+from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip
+from utils import readb64
 
 # export SPOTIPY_CLIENT_ID='dde4e2ccdb1a4498aef96198f319a1e8'
 # export SPOTIPY_CLIENT_SECRET='8f9c59120ab949828c5936c751878797'
@@ -168,13 +166,6 @@ def playlists():
     # return render_template('index.html')
 
 
-def readb64(uri):
-    encoded_data = uri.split(',')[1]
-    nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
-    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    return img
-
-
 @socketio.on('connect', namespace='/test')
 def test_connect():
     app.logger.info("client connected")
@@ -182,20 +173,6 @@ def test_connect():
 
 @socketio.on('input image', namespace='/test')
 def test_message(data):
-    # init model params
-    image_size = 256
-    expressions = {0: 'neutral', 1: 'happy', 2: 'sad', 3: 'surprise', 4: 'fear', 5: 'disgust', 6: 'anger',
-                   7: 'contempt',
-                   8: 'none'}
-    net = EmoNet(n_expression=8)
-    state_dict = torch.load("emonet/pretrained/emonet_8.pth", map_location='cpu')
-    net.load_state_dict(state_dict, strict=False)
-    net.eval()
-    transform_image = transforms.Compose([transforms.ToTensor()])
-    transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
-    detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor("models/shape_predictor_68_face_landmarks.dat")
-
     frame = readb64(data['image'])
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     rects = detector(gray, 0)
