@@ -194,7 +194,7 @@ def test_message(data):
     transform_image = transforms.Compose([transforms.ToTensor()])
     transform_image_shape_no_flip = DataAugmentor(image_size, image_size)
     detector = dlib.get_frontal_face_detector()
-    predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+    predictor = dlib.shape_predictor("models/shape_predictor_68_face_landmarks.dat")
 
     frame = readb64(data['image'])
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
