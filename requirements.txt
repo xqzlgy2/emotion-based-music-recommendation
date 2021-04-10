@@ -1,0 +1,9 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-64
+deepface=0.0.49=pypi_0
+dlib=19.21.1=pypi_0
+flask=1.1.2=pypi_0
+numpy=1.19.5=pypi_0
+matplotlib=3.3.4=pypi_0
+tensorflow=2.2.0=pypi_0
