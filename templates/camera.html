@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="ugh, hi." name="description">
+    <meta content="Makeup Webcam" name="title">
+    <title>Emotion Capture</title>
+    <style>
+        #container {
+            margin: 0px auto;
+            border: 10px #333 solid;
+        }
+
+        #videoElement {
+            width: 640px;
+            height: 480px;
+            display: none;
+            background-color: #666;
+        }
+
+        #imageElement {
+            width: 640px;
+            height: 480px;
+            background-color: #666;
+        }
+
+        #canvasElement {
+            width: 640px;
+            height: 480px;
+            border: 1px solid black;
+        }
+
+        #photo {
+            width: 640px;
+            height: 480px;
+
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div>
+        <video autoplay="true" id="videoElement"></video>
+        <canvas id="canvasElement"></canvas>
+
+        <img id="photo">
+        <h3 id="emotion"></h3>
+        <h3 id="valence"></h3>
+        <h3 id="arousal"></h3>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
+        integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
+        crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
