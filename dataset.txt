@@ -1,8 +1,0 @@
-Micro-expression
-    CASME II: http://fu.psych.ac.cn/CASME/casme2-en.php (requested)
-    SMIC: https://www.oulu.fi/cmvs/node/41319 (requested)
-    SAMM: http://www2.docm.mmu.ac.uk/STAFF/m.yap/dataset.php (needs supervisor to request)
-
-Regular
-    AffectNet: http://mohammadmahoor.com/affectnet/ (has valence and arousal, needs supervisor to request)
-
