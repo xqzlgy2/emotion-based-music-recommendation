@@ -48,7 +48,7 @@ if not os.path.exists(caches_folder):
 
 
 def session_cache_path():
-    return caches_folder + session.get('uuid')
+    return caches_folder + str(session.get('uuid'))
 
 
 @app.route('/')
