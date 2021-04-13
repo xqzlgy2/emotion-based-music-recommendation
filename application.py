@@ -16,10 +16,6 @@ from scipy.special import softmax
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip
 from utils import readb64
 
-# export SPOTIPY_CLIENT_ID='dde4e2ccdb1a4498aef96198f319a1e8'
-# export SPOTIPY_CLIENT_SECRET='8f9c59120ab949828c5936c751878797'
-# export SPOTIPY_REDIRECT_URI='http://localhost:5000/callback'
-
 # scope = "user-library-read"
 # sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
 
@@ -31,6 +27,10 @@ from utils import readb64
 #		playlists = sp.next(playlists)
 #	else:
 #		playlists = None
+
+SPOTIPY_CLIENT_ID='dde4e2ccdb1a4498aef96198f319a1e8'
+SPOTIPY_CLIENT_SECRET='8f9c59120ab949828c5936c751878797'
+SPOTIPY_REDIRECT_URI='http://localhost:5000'
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(stdout))
@@ -72,9 +72,9 @@ def sign_in():
         scope='playlist-read-private playlist-modify-private app-remote-control user-read-currently-playing',
         cache_handler=cache_handler,
         show_dialog=True,
-        client_id='dde4e2ccdb1a4498aef96198f319a1e8',
-        client_secret='8f9c59120ab949828c5936c751878797',
-        redirect_uri='http://localhost:5000')
+        client_id=SPOTIPY_CLIENT_ID,
+        client_secret=SPOTIPY_CLIENT_SECRET,
+        redirect_uri=SPOTIPY_REDIRECT_URI)
 
     if request.args.get("code"):
         # Step 3. Being redirected from Spotify auth page
@@ -114,9 +114,9 @@ def sign_out():
 def playlists():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler,
-                                               client_id='dde4e2ccdb1a4498aef96198f319a1e8',
-                                               client_secret='8f9c59120ab949828c5936c751878797',
-                                               redirect_uri='http://localhost:5000')
+                                               client_id=SPOTIPY_CLIENT_ID,
+                                               client_secret=SPOTIPY_CLIENT_SECRET,
+                                               redirect_uri=SPOTIPY_REDIRECT_URI)
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         return redirect('/')
         # return render_template('index.html')
@@ -134,9 +134,9 @@ def playlists():
     # def currently_playing():
     cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler,
-                                               client_id='dde4e2ccdb1a4498aef96198f319a1e8',
-                                               client_secret='8f9c59120ab949828c5936c751878797',
-                                               redirect_uri='http://localhost:5000')
+                                               client_id=SPOTIPY_CLIENT_ID,
+                                               client_secret=SPOTIPY_CLIENT_SECRET,
+                                               redirect_uri=SPOTIPY_REDIRECT_URI)
     if not auth_manager.validate_token(cache_handler.get_cached_token()):
         return redirect('/')
         # return render_template('index.html')
@@ -154,9 +154,9 @@ def playlists():
     # def current_user():
     # cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
     # auth_manager = spotipy.oauth2.SpotifyOAuth(cache_handler=cache_handler,
-    #                                            client_id='dde4e2ccdb1a4498aef96198f319a1e8',
-    #                                            client_secret='8f9c59120ab949828c5936c751878797',
-    #                                            redirect_uri='http://localhost:5000')
+    #                                            client_id=SPOTIPY_CLIENT_ID,
+    #                                            client_secret=SPOTIPY_CLIENT_SECRET,
+    #                                            redirect_uri=SPOTIPY_REDIRECT_URI)
     # if not auth_manager.validate_token(cache_handler.get_cached_token()):
     #     return redirect('/')
     #     return render_template('index.html')
