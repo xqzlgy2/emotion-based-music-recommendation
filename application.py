@@ -28,9 +28,9 @@ from utils import readb64
 #	else:
 #		playlists = None
 
-SPOTIPY_CLIENT_ID='dde4e2ccdb1a4498aef96198f319a1e8'
-SPOTIPY_CLIENT_SECRET='8f9c59120ab949828c5936c751878797'
-SPOTIPY_REDIRECT_URI='http://localhost:5000'
+SPOTIPY_CLIENT_ID = 'dde4e2ccdb1a4498aef96198f319a1e8'
+SPOTIPY_CLIENT_SECRET = '8f9c59120ab949828c5936c751878797'
+SPOTIPY_REDIRECT_URI = 'http://localhost:5000'
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(stdout))
