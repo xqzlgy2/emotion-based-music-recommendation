@@ -14,7 +14,7 @@ from flask_socketio import SocketIO, emit
 from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
-    SpotifyCacheAuth, session_cache_path
+    SpotifyCacheAuth
 from utils import readb64
 
 app = Flask(__name__)
@@ -61,15 +61,15 @@ def sign_in():
     # If signed in, display data
     spotify = spotipy.Spotify(auth_manager=spotifyCacheAuth.auth_manager)
     return f'<h2>Hi {spotify.me()["display_name"]}, ' \
-           f'<small><a href="/sign_out">[sign out]<a/></small></h2>' \
-           f'<a href="/playlists">Allow access to my playlists</a> '
+           f'<small><a href="/sign_out">[sign out]<a/></small></h2>'
 
 
 @app.route('/sign_out')
 def sign_out():
     try:
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
-        os.remove(session_cache_path())
+        spotifyCacheAuth = SpotifyCacheAuth()
+        os.remove(spotifyCacheAuth.session_cache_path())
         session.clear()
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))

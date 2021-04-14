@@ -29,26 +29,13 @@ SPOTIPY_CLIENT_SECRET = '8f9c59120ab949828c5936c751878797'
 SPOTIPY_REDIRECT_URI = 'http://localhost:5000'
 
 
-def singleton(class_):
-    instances = {}
-
-    def get_instance():
-        if class_ not in instances:
-            instances[class_] = class_()
-        return instances[class_]
-
-    return get_instance
-
-
-def session_cache_path():
-    return caches_folder + str(session.get('uuid'))
-
-
-@singleton
 class SpotifyCacheAuth:
 
+    def session_cache_path(self):
+        return caches_folder + str(session.get('uuid'))
+
     def __init__(self):
-        self.cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
+        self.cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=self.session_cache_path())
         self.auth_manager = spotipy.oauth2.SpotifyOAuth(
             scope='playlist-read-private playlist-modify-private app-remote-control user-read-currently-playing',
             cache_handler=self.cache_handler,

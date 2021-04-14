@@ -19,17 +19,13 @@
 
 <div class="btn1" style="width: 700px;">
     <div class="container darker">
-
         <p>Please allow access to your webcam</p>
-        <span class="time-right"><button onclick="clickOne()"></button></span>
-
     </div>
 </div>
 
 
-<div class="btn3" style="display: none;width: 700px;">
+<div class="btn3" style="width: 700px;">
     <div class="container darker">
-
         <p>Please Login to you Spotify account and allow us access to your Spotify playlist</p>
         <span class="time-right"><button onclick="clickThree()"><a href="{{ url_for('sign_in') }}">Allow access to Spotify Playlist</a></button></span>
     </div>
@@ -37,7 +33,6 @@
 
 <div class="btn4" style="display: none;width: 700px;">
     <div class="container darker">
-
         <p>This is the song recommended by our system</p>
         <span class="time-right"><button onclick="clickFour()"></button></span>
     </div>
@@ -45,7 +40,6 @@
 
 <div class="btn5" style="display: none;width: 700px;">
     <div class="container">
-
         <p>This is the second song recommended by our system</p>
         <span class="time-right"><button onclick="clickFive()"></button></span>
     </div>
@@ -53,17 +47,12 @@
 
 <div class="btn6" style="display: none;width: 700px;">
     <div class="container darker">
-
         <p>Please give us a feedback</p>
         <span class="time-right"><button onclick="clickSix()"><a href="{{ url_for('camera') }}"></a></button></span>
     </div>
 </div>
 
 <script type="text/javascript">
-    function clickOne(e) {
-        document.querySelector('.btn3').style.display = 'block';
-    }
-
     function clickThree(e) {
         document.querySelector('.btn4').style.display = 'block';
     }
@@ -74,10 +63,6 @@
 
     function clickFive(e) {
         document.querySelector('.btn6').style.display = 'block';
-    }
-
-    function clickSix(e) {
-
     }
 </script>
 
