@@ -5,50 +5,21 @@
     <meta content="ugh, hi." name="description">
     <meta content="Makeup Webcam" name="title">
     <title>Emotion Capture</title>
-    <style>
-        #container {
-            margin: 0px auto;
-            border: 10px #333 solid;
-        }
-
-        #videoElement {
-            width: 640px;
-            height: 480px;
-            display: none;
-            background-color: #666;
-        }
-
-        #imageElement {
-            width: 640px;
-            height: 480px;
-            background-color: #666;
-        }
-
-        #canvasElement {
-            width: 640px;
-            height: 480px;
-            border: 1px solid black;
-        }
-
-        #photo {
-            width: 640px;
-            height: 480px;
-
-            border: 1px solid black;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/camera.css') }}">
 </head>
 <body>
 <div id="container">
-    <div>
-        <video autoplay="true" id="videoElement"></video>
-        <canvas id="canvasElement"></canvas>
-
+    <video autoplay="true" id="videoElement"></video>
+        <div id="frames">
+            <canvas id="canvasElement"></canvas>
         <img id="photo">
-        <h3 id="emotion"></h3>
+        </div>
+
+        <div id="results">
+            <h3 id="emotion"></h3>
         <h3 id="valence"></h3>
         <h3 id="arousal"></h3>
-    </div>
+        </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"

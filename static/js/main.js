@@ -19,33 +19,24 @@ $(document).ready(function () {
         ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight, 0, 0, 300, 150);
         let dataURL = canvas.toDataURL("image/png");
         socket.emit('input image', {image: dataURL});
-        // setInterval(
-        //     function () {
-        //         let dataURL = canvas.toDataURL;
-        //         socket.emit('input image', dataURL);
-        //     }, 2000);
-
-        // socket.emit('output image')
 
         socket.on('out-image-event', function (data) {
-            photo.setAttribute('src', "data:image/png;base64, "+data.image);
+            photo.setAttribute('src', "data:image/png;base64, " + data.image);
             emotion.innerText = data.results['emotion'];
             valence.innerText = data.results['valence'];
             arousal.innerText = data.results['arousal'];
         });
-
-        socket.on('finished-capturing', function () {
-            console.log("finished-capturing")
-            sessionStorage.setItem('finished-capturing', 'true');
-            window.location.replace('/')
-        })
-
-
     }
 
     socket.on('connect', function () {
         console.log('Connected!');
     });
+
+    socket.on('finished-capturing', function () {
+        console.log("finished-capturing")
+        sessionStorage.setItem('finished-capturing', 'true');
+        window.location.replace('/')
+    })
 
     var constraints = {
         video: {

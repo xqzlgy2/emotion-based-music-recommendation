@@ -73,7 +73,7 @@ def sign_out():
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
         spotifyCacheAuth = SpotifyCacheAuth()
         os.remove(spotifyCacheAuth.session_cache_path())
-        os.remove(emotion_cache_folder + session.get('uuid'))
+        os.remove(emotion_cache_folder + str(session.get('uuid')))
         session.clear()
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
@@ -99,7 +99,7 @@ def test_connect():
 
 @socketio.on('input image', namespace='/test')
 def test_message(data):
-    if session.get('uuid') not in recorded_data:
+    if session.get('uuid') not in recorded_data or recorded_data[session.get('uuid')] == {}:
         recorded_data[session.get('uuid')] = {"valence": [], "arousal": []}
 
     frame = readb64(data['image'])
@@ -127,9 +127,9 @@ def test_message(data):
             emotion_prob = softmax(emotion_raw)
             valence = float(output['valence'].detach().numpy()[0])
             arousal = float(output['arousal'].detach().numpy()[0])
-            results = {"emotion": expressions[np.argmax(emotion_prob)],
-                       "valence": valence,
-                       "arousal": arousal}
+            results = {"emotion": "Emotion: "+expressions[np.argmax(emotion_prob)],
+                       "valence": "Valence: "+str(round(valence, 4)),
+                       "arousal": "Arousal: "+str(round(arousal, 4))}
 
             recorded_data[session.get('uuid')]['valence'].append(valence)
             recorded_data[session.get('uuid')]['arousal'].append(arousal)
@@ -139,7 +139,7 @@ def test_message(data):
             emit('out-image-event', {'image': image_data, 'results': results}, namespace='/test')
 
     if len(recorded_data[session.get('uuid')]['valence']) == target_length:
-        with open(emotion_cache_folder + session.get('uuid'), 'w') as f:
+        with open(emotion_cache_folder + str(session.get('uuid')), 'w') as f:
             avg_valence = sum(recorded_data[session.get('uuid')]['valence']) / target_length
             avg_arousal = sum(recorded_data[session.get('uuid')]['arousal']) / target_length
             json.dump({"avg_valence": avg_valence, "avg_arousal": avg_arousal}, f)
