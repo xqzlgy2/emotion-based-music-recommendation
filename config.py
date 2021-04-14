@@ -8,6 +8,17 @@ from emonet.emonet.data_augmentation import DataAugmentor
 from emonet.emonet.models import EmoNet
 
 # START -- config for facial expression recognition --
+emotion_cache_folder = ".emotion_caches/"
+recorded_valence = []
+recorded_arousal = []
+
+
+def clear_recorded_data():
+    global recorded_valence, recorded_arousal
+    recorded_arousal = []
+    recorded_valence = []
+
+
 image_size = 256
 expressions = {0: 'neutral', 1: 'happy', 2: 'sad', 3: 'surprise', 4: 'fear', 5: 'disgust', 6: 'anger',
                7: 'contempt',

@@ -1,4 +1,5 @@
 import base64
+import json
 import logging
 import os
 import uuid
@@ -14,7 +15,7 @@ from flask_socketio import SocketIO, emit
 from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
-    SpotifyCacheAuth
+    SpotifyCacheAuth, recorded_valence, recorded_arousal, emotion_cache_folder, clear_recorded_data, caches_folder
 from utils import readb64
 
 app = Flask(__name__)
@@ -27,9 +28,11 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = './.flask_session/'
 Session(app)
 
-caches_folder = './.spotify_caches/'
 if not os.path.exists(caches_folder):
     os.makedirs(caches_folder)
+
+if not os.path.exists(emotion_cache_folder):
+    os.makedirs(emotion_cache_folder)
 
 
 @app.route('/')
@@ -70,6 +73,7 @@ def sign_out():
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
         spotifyCacheAuth = SpotifyCacheAuth()
         os.remove(spotifyCacheAuth.session_cache_path())
+        os.remove(emotion_cache_folder + session.get('uuid'))
         session.clear()
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
@@ -118,14 +122,25 @@ def test_message(data):
             output = net(tensor)
             emotion_raw = output['expression'].detach().numpy()
             emotion_prob = softmax(emotion_raw)
-
+            valence = float(output['valence'].detach().numpy()[0])
+            arousal = float(output['arousal'].detach().numpy()[0])
             results = {"emotion": expressions[np.argmax(emotion_prob)],
-                       "valence": float(output['valence'].detach().numpy()[0]),
-                       "arousal": float(output['arousal'].detach().numpy()[0])}
+                       "valence": valence,
+                       "arousal": arousal}
+
+            recorded_arousal.append(arousal)
+            recorded_valence.append(valence)
 
             ret, buffer = cv2.imencode('.png', frame)
             image_data = base64.b64encode(buffer).decode('utf-8')
             emit('out-image-event', {'image': image_data, 'results': results}, namespace='/test')
+
+    if len(recorded_valence) == 30:
+        with open(emotion_cache_folder + session.get('uuid'), 'w') as f:
+            avg_valence = sum(recorded_valence) / len(recorded_valence)
+            avg_arousal = sum(recorded_arousal) / len(recorded_arousal)
+            json.dump({"avg_valence": avg_valence, "avg_arousal": avg_arousal}, f)
+            clear_recorded_data()
 
 
 if __name__ == '__main__':
