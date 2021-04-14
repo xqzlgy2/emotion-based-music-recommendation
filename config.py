@@ -40,14 +40,15 @@ def singleton(class_):
     return get_instance
 
 
+def session_cache_path():
+    return caches_folder + str(session.get('uuid'))
+
+
 @singleton
 class SpotifyCacheAuth:
 
-    def session_cache_path(self):
-        return caches_folder + str(session.get('uuid'))
-
     def __init__(self):
-        self.cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=self.session_cache_path())
+        self.cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=session_cache_path())
         self.auth_manager = spotipy.oauth2.SpotifyOAuth(
             scope='playlist-read-private playlist-modify-private app-remote-control user-read-currently-playing',
             cache_handler=self.cache_handler,
@@ -55,7 +56,6 @@ class SpotifyCacheAuth:
             client_id=SPOTIPY_CLIENT_ID,
             client_secret=SPOTIPY_CLIENT_SECRET,
             redirect_uri=SPOTIPY_REDIRECT_URI)
-
 
     def validate_token(self):
         return self.auth_manager.validate_token(self.cache_handler.get_cached_token())

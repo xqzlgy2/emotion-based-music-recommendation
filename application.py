@@ -14,7 +14,7 @@ from flask_socketio import SocketIO, emit
 from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
-    SpotifyCacheAuth
+    SpotifyCacheAuth, session_cache_path
 from utils import readb64
 
 app = Flask(__name__)
@@ -70,8 +70,7 @@ def sign_in():
 def sign_out():
     try:
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
-        spotifyCacheAuth = SpotifyCacheAuth()
-        os.remove(spotifyCacheAuth.session_cache_path())
+        os.remove(session_cache_path())
         session.clear()
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
