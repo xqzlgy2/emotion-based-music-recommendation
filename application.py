@@ -35,7 +35,7 @@ if not os.path.exists(caches_folder):
 @app.route('/')
 def index():
     if request.args.get("code"):
-        # Step 3. Being redirected from Spotify auth page
+        # if signed in, cache token
         spotifyCacheAuth = SpotifyCacheAuth()
         token = spotifyCacheAuth.auth_manager.get_access_token(request.args.get("code"))
         spotifyCacheAuth.cache_handler.save_token_to_cache(token)
@@ -50,16 +50,15 @@ def camera():
 @app.route('/sign_in')
 def sign_in():
     if not session.get('uuid'):
-        # Step 1. Visitor is unknown, give random ID
+        # visitor is unknown, give random ID
         session['uuid'] = str(uuid.uuid4())
     spotifyCacheAuth = SpotifyCacheAuth()
     if not spotifyCacheAuth.validate_token():
-        # Step 2. Display sign in link when no token
+        # display sign in link if no token provided
         auth_url = spotifyCacheAuth.auth_manager.get_authorize_url()
         return f'<h2><a href="{auth_url}">Sign in</a></h2>'
-        # return render_template('index.html', auth_url=auth_url)
 
-    # Step 4. Signed in, display data
+    # If signed in, display data
     spotify = spotipy.Spotify(auth_manager=spotifyCacheAuth.auth_manager)
     return f'<h2>Hi {spotify.me()["display_name"]}, ' \
            f'<small><a href="/sign_out">[sign out]<a/></small></h2>' \
