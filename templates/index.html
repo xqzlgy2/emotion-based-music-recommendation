@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Example of the Authorization Code flow with Spotify</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="{{ url_for('static', filename='/css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 
 
@@ -39,8 +39,7 @@
     <div class="container darker">
 
         <p>This is the song recommended by our system</p>
-        <span class="time-right"><button onclick="clickFour()"><a
-                href="{{ url_for('sign_in') }}">Play the link</a></button></span>
+        <span class="time-right"><button onclick="clickFour()"></button></span>
     </div>
 </div>
 
@@ -48,8 +47,7 @@
     <div class="container">
 
         <p>This is the second song recommended by our system</p>
-        <span class="time-right"><button onclick="clickFive()"><a
-                href="{{ url_for('sign_in') }}">Play the link</a></button></span>
+        <span class="time-right"><button onclick="clickFive()"></button></span>
     </div>
 </div>
 
@@ -57,7 +55,7 @@
     <div class="container darker">
 
         <p>Please give us a feedback</p>
-        <span class="time-right"><button onclick="clickSix()"><a href="{{ url_for('sign_in') }}">Allow access to Spotify Playlist</a></button></span>
+        <span class="time-right"><button onclick="clickSix()"><a href="{{ url_for('camera') }}"></a></button></span>
     </div>
 </div>
 
