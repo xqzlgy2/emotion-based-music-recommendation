@@ -15,7 +15,7 @@ from flask_socketio import SocketIO, emit
 from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
-    SpotifyCacheAuth, recorded_valence, recorded_arousal, emotion_cache_folder, clear_recorded_data, caches_folder
+    SpotifyCacheAuth, recorded_data, emotion_cache_folder, clear_recorded_data, caches_folder
 from utils import readb64
 
 app = Flask(__name__)
@@ -128,19 +128,21 @@ def test_message(data):
                        "valence": valence,
                        "arousal": arousal}
 
-            recorded_arousal.append(arousal)
-            recorded_valence.append(valence)
+            if session.get('uuid') not in recorded_data:
+                recorded_data[session.get('uuid')] = {"valence": [], "arousal": []}
+            recorded_data[session.get('uuid')]['valence'].append(valence)
+            recorded_data[session.get('uuid')]['arousal'].append(arousal)
 
             ret, buffer = cv2.imencode('.png', frame)
             image_data = base64.b64encode(buffer).decode('utf-8')
             emit('out-image-event', {'image': image_data, 'results': results}, namespace='/test')
 
-    if len(recorded_valence) == 30:
+    if len(recorded_data[session.get('uuid')]['valence']) == 30:
         with open(emotion_cache_folder + session.get('uuid'), 'w') as f:
-            avg_valence = sum(recorded_valence) / len(recorded_valence)
-            avg_arousal = sum(recorded_arousal) / len(recorded_arousal)
+            avg_valence = sum(recorded_data[session.get('uuid')]['valence']) / 30
+            avg_arousal = sum(recorded_data[session.get('uuid')]['arousal']) / 30
             json.dump({"avg_valence": avg_valence, "avg_arousal": avg_arousal}, f)
-            clear_recorded_data()
+            clear_recorded_data(session.get('uuid'))
 
 
 if __name__ == '__main__':

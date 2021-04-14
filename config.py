@@ -9,14 +9,11 @@ from emonet.emonet.models import EmoNet
 
 # START -- config for facial expression recognition --
 emotion_cache_folder = ".emotion_caches/"
-recorded_valence = []
-recorded_arousal = []
+recorded_data = {}
 
 
-def clear_recorded_data():
-    global recorded_valence, recorded_arousal
-    recorded_arousal = []
-    recorded_valence = []
+def clear_recorded_data(uuid):
+    recorded_data[uuid] = {}
 
 
 image_size = 256
