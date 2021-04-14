@@ -13,10 +13,11 @@ recorded_data = {}
 
 
 def clear_recorded_data(uuid):
-    recorded_data[uuid] = {}
+    del recorded_data[uuid]
 
 
 image_size = 256
+target_length = 10
 expressions = {0: 'neutral', 1: 'happy', 2: 'sad', 3: 'surprise', 4: 'fear', 5: 'disgust', 6: 'anger',
                7: 'contempt',
                8: 'none'}

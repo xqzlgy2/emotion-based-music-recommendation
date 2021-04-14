@@ -15,7 +15,7 @@ from flask_socketio import SocketIO, emit
 from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
-    SpotifyCacheAuth, recorded_data, emotion_cache_folder, clear_recorded_data, caches_folder
+    SpotifyCacheAuth, recorded_data, emotion_cache_folder, clear_recorded_data, caches_folder, target_length
 from utils import readb64
 
 app = Flask(__name__)
@@ -99,6 +99,9 @@ def test_connect():
 
 @socketio.on('input image', namespace='/test')
 def test_message(data):
+    if session.get('uuid') not in recorded_data:
+        recorded_data[session.get('uuid')] = {"valence": [], "arousal": []}
+
     frame = readb64(data['image'])
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     rects = detector(gray, 0)
@@ -128,8 +131,6 @@ def test_message(data):
                        "valence": valence,
                        "arousal": arousal}
 
-            if session.get('uuid') not in recorded_data:
-                recorded_data[session.get('uuid')] = {"valence": [], "arousal": []}
             recorded_data[session.get('uuid')]['valence'].append(valence)
             recorded_data[session.get('uuid')]['arousal'].append(arousal)
 
@@ -137,12 +138,13 @@ def test_message(data):
             image_data = base64.b64encode(buffer).decode('utf-8')
             emit('out-image-event', {'image': image_data, 'results': results}, namespace='/test')
 
-    if len(recorded_data[session.get('uuid')]['valence']) == 30:
+    if len(recorded_data[session.get('uuid')]['valence']) == target_length:
         with open(emotion_cache_folder + session.get('uuid'), 'w') as f:
-            avg_valence = sum(recorded_data[session.get('uuid')]['valence']) / 30
-            avg_arousal = sum(recorded_data[session.get('uuid')]['arousal']) / 30
+            avg_valence = sum(recorded_data[session.get('uuid')]['valence']) / target_length
+            avg_arousal = sum(recorded_data[session.get('uuid')]['arousal']) / target_length
             json.dump({"avg_valence": avg_valence, "avg_arousal": avg_arousal}, f)
             clear_recorded_data(session.get('uuid'))
+        emit('finished-capturing')
 
 
 if __name__ == '__main__':

@@ -28,12 +28,17 @@ $(document).ready(function () {
         // socket.emit('output image')
 
         socket.on('out-image-event', function (data) {
-            console.log(data.image)
             photo.setAttribute('src', "data:image/png;base64, "+data.image);
             emotion.innerText = data.results['emotion'];
             valence.innerText = data.results['valence'];
             arousal.innerText = data.results['arousal'];
         });
+
+        socket.on('finished-capturing', function () {
+            console.log("finished-capturing")
+            sessionStorage.setItem('finished-capturing', 'true');
+            window.location.replace('/')
+        })
 
 
     }
