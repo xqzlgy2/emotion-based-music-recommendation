@@ -18,7 +18,7 @@ from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
     SpotifyCacheAuth, recorded_data, emotion_cache_folder, clear_recorded_data, caches_folder, target_length
-from utils import readb64
+from utils import readb64, normalize
 from data_analyze.classifier import load_model
 
 app = Flask(__name__)
@@ -247,8 +247,8 @@ def test_message(data):
             output = net(tensor)
             emotion_raw = output['expression'].detach().numpy()
             emotion_prob = softmax(emotion_raw)
-            valence = float(output['valence'].detach().numpy()[0])
-            arousal = float(output['arousal'].detach().numpy()[0])
+            valence = normalize(float(output['valence'].detach().numpy()[0]))
+            arousal = normalize(float(output['arousal'].detach().numpy()[0]))
             results = {"emotion": "Emotion: "+expressions[np.argmax(emotion_prob)],
                        "valence": "Valence: "+str(round(valence, 4)),
                        "arousal": "Arousal: "+str(round(arousal, 4))}
