@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import os
+import random
 from typing import Counter
 import uuid
 from sys import stdout
@@ -112,8 +113,9 @@ def get_playlists_tracks(spotify):
 
 def get_playlists_features(spotify, track_ids):
     track_ids = list(track_ids)
-    features = []
+    features, artists, genres = [], [], []
 
+    # limitation for track info is 50
     for idx in range(0, len(track_ids), 50):
         end = min(idx+50, len(track_ids))
         slice = track_ids[idx: end]
@@ -121,16 +123,29 @@ def get_playlists_features(spotify, track_ids):
         tracks_info = spotify.tracks(slice)['tracks']
 
         for i in range(len(audio_features)):
-            tracks_info[i]['year'] = tracks_info[i]['album']['release_date'].split('-')[0]
-            audio_features[i].update(tracks_info[i])
+            info = tracks_info[i]
+
+            # build feature vector for a track
+            info['year'] = info['album']['release_date'].split('-')[0]
+            audio_features[i].update(info)
             vec = build_vector(audio_features[i])
             features.append(vec)
 
+            # record artists of tracks
+            artists_ids = list(map(lambda x: x['id'], info['artists']))
+            artists.extend(artists_ids)
+
     features = np.array(features)
     model = load_model('./models/genre_classifier.pkl')
-    results = model.predict(features)
-    print([str(k) + ' ' + str(v/len(results)) for k,v in Counter(results).items()])
-    return results
+    
+    # avoid exception of no playlist exists
+    if len(features) != 0:
+        genres = model.predict(features)
+
+    track_valences = list(map(lambda x: {track_ids[x[0]]: x[1][12]}, enumerate(features)))
+    recommend_res = get_recommendation(spotify, track_valences, genres, artists)
+
+    return recommend_res
 
 
 def build_vector(feature_dict):
@@ -142,6 +157,61 @@ def build_vector(feature_dict):
         vec.append(float(feature_dict[field]))
 
     return np.array(vec)
+
+
+def get_recommendation(spotify, track_valences, genres, artists):
+    top_num = 5
+    # analyze playlist info, get top genres
+    genre_count = sorted(Counter(genres).items(), key=lambda x: -x[1])
+    top_genres = genre_count[:min(len(genres), top_num)]
+
+    # valences = list(map(lambda x: list(x.values())[0], track_valences))
+    # median_valence = np.median(valences)
+    user_valence = get_detected_emotion()
+    target_valence = 1 - user_valence
+
+    seed_genres = list(map(lambda x: x[0], top_genres))
+    seed_spotify_genres = []
+
+    # map dataset label to spotify genres, do random selection
+    with open('./data_analyze/data/genre_mapping.json') as f:
+        genre_map = json.load(f)
+        for genre in seed_genres:
+            seed_spotify_genres.extend(genre_map[genre])
+    seed_spotify_genres = random.sample(seed_spotify_genres, min(top_num, len(seed_spotify_genres)))
+
+    api_response = None
+    while not api_response:
+        try:
+            api_response = spotify.recommendations(seed_genres=seed_spotify_genres, target_valence=target_valence, limit=10)
+        except spotipy.exceptions.SpotifyException:
+            # if no song could be found, resample genres
+            seed_spotify_genres = random.sample(seed_spotify_genres, min(top_num, len(seed_spotify_genres)))
+
+    result = list(map(lambda x: extract_result_fields(x), api_response['tracks']))
+
+    return result
+
+
+def extract_result_fields(info):
+    return {
+        'name': info['name'],
+        'artists': list(map(lambda x: x['name'], info['artists'])),
+        'url': info['external_urls']['spotify']
+    }
+
+
+def get_detected_emotion():
+    path = emotion_cache_folder + str(session.get('uuid'))
+
+    # if no user file provided, use neutral instead
+    if not os.path.isfile(path):
+        return 0.5
+
+    with open(path, 'r') as f:
+        detected_emotion = json.load(f)
+        # normalize [-1,1] to [0,1]
+        return (detected_emotion['avg_valence'] + 1) / 2
 
 
 @socketio.on('connect', namespace='/test')
