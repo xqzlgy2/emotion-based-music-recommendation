@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import os
+from typing import Counter
 import uuid
 from sys import stdout
 
@@ -17,6 +18,7 @@ from scipy.special import softmax
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
     SpotifyCacheAuth, recorded_data, emotion_cache_folder, clear_recorded_data, caches_folder, target_length
 from utils import readb64
+from data_analyze.classifier import load_model
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(stdout))
@@ -87,9 +89,59 @@ def playlists():
         return redirect('/')
 
     spotify = spotipy.Spotify(auth_manager=spotifyCacheAuth.auth_manager)
+    track_ids = get_playlists_tracks(spotify)
+    features = get_playlists_features(spotify, track_ids)
+    return str(features)
+
+
+def get_playlists_tracks(spotify):
     requestResponse = spotify.current_user_playlists()
+    track_ids = set()
+
     if requestResponse is not None:
-        return requestResponse
+        playlists = requestResponse["items"]
+
+        for playlist in playlists:
+            playlist_info = spotify.playlist(playlist["id"])
+            tracks = playlist_info['tracks']['items']
+            for track in tracks:
+                track_ids.add(track["track"]["id"])
+
+    return track_ids
+
+
+def get_playlists_features(spotify, track_ids):
+    track_ids = list(track_ids)
+    features = []
+
+    for idx in range(0, len(track_ids), 50):
+        end = min(idx+50, len(track_ids))
+        slice = track_ids[idx: end]
+        audio_features = spotify.audio_features(slice)
+        tracks_info = spotify.tracks(slice)['tracks']
+
+        for i in range(len(audio_features)):
+            tracks_info[i]['year'] = tracks_info[i]['album']['release_date'].split('-')[0]
+            audio_features[i].update(tracks_info[i])
+            vec = build_vector(audio_features[i])
+            features.append(vec)
+
+    features = np.array(features)
+    model = load_model('./models/genre_classifier.pkl')
+    results = model.predict(features)
+    print([str(k) + ' ' + str(v/len(results)) for k,v in Counter(results).items()])
+    return results
+
+
+def build_vector(feature_dict):
+    vec = []
+    fields = ['acousticness', 'danceability', 'duration_ms', 'energy', 'instrumentalness',
+             'key', 'liveness', 'loudness', 'mode', 'popularity', 'speechiness', 'tempo', 'valence', 'year']
+    
+    for field in fields:
+        vec.append(float(feature_dict[field]))
+
+    return np.array(vec)
 
 
 @socketio.on('connect', namespace='/test')

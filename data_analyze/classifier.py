@@ -138,8 +138,8 @@ def classify():
     # train_hierarchical_model(x, y)
 
 
-def load_model():
-    with open('../models/genre_classifier.pkl', 'rb') as f:
+def load_model(model_path):
+    with open(model_path, 'rb') as f:
         model = pickle.load(f)
         return model
 
