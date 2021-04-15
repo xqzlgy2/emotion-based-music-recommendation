@@ -2,11 +2,10 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Example of the Authorization Code flow with Spotify</title>
+    <title>Emotion Based Music Recommendation</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
-
 
 <body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
@@ -16,36 +15,28 @@
 
 <h2>Hi, Welcome to our Music Recommendation System</h2>
 
-
-<div class="btn1" style="width: 700px;">
-    <div class="container darker">
-        <p>Please allow access to your webcam</p>
-    </div>
-</div>
-
-
-<div class="btn3" style="width: 700px;">
+<div id="playlist" style="width: 700px;">
     <div class="container darker">
         <p>Please Login to you Spotify account and allow us access to your Spotify playlist</p>
-        <span class="time-right"><button onclick="clickThree()"><a href="{{ url_for('sign_in') }}">Allow access to Spotify Playlist</a></button></span>
+        <span class="time-right"><button><a href="{{ url_for('sign_in') }}">Allow access to Spotify Playlist</a></button></span>
     </div>
 </div>
 
-<div class="btn4" style="display: none;width: 700px;">
+<div id="camera" style="width: 700px;">
+    <div class="container darker">
+        <p>Please allow access to your webcam</p>
+        <span class="time-right"><button><a href="{{ url_for('camera') }}">Start emotion recognition</a></button></span>
+    </div>
+</div>
+
+<div id="recommendation" style="display: none;width: 700px;">
     <div class="container darker">
         <p>This is the song recommended by our system</p>
         <span class="time-right"><button onclick="clickFour()"></button></span>
     </div>
 </div>
 
-<div class="btn5" style="display: none;width: 700px;">
-    <div class="container">
-        <p>This is the second song recommended by our system</p>
-        <span class="time-right"><button onclick="clickFive()"></button></span>
-    </div>
-</div>
-
-<div class="btn6" style="display: none;width: 700px;">
+<div id="feedback" style="display: none;width: 700px;">
     <div class="container darker">
         <p>Please give us a feedback</p>
         <span class="time-right"><button onclick="clickSix()"><a href="{{ url_for('camera') }}"></a></button></span>
@@ -53,16 +44,8 @@
 </div>
 
 <script type="text/javascript">
-    function clickThree(e) {
-        document.querySelector('.btn4').style.display = 'block';
-    }
-
-    function clickFour(e) {
-        document.querySelector('.btn5').style.display = 'block';
-    }
-
-    function clickFive(e) {
-        document.querySelector('.btn6').style.display = 'block';
+    if (sessionStorage.getItem('finished-capturing') === 'true') {
+        document.querySelector('#recommendation').style.display = 'block';
     }
 </script>
 

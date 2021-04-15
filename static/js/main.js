@@ -7,9 +7,9 @@ $(document).ready(function () {
     let emotion = document.getElementById("emotion");
     let valence = document.getElementById("valence");
     let arousal = document.getElementById("arousal");
-    var localMediaStream = null;
+    let localMediaStream = null;
 
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
 
     function sendSnapshot() {
         if (!localMediaStream) {
@@ -33,12 +33,12 @@ $(document).ready(function () {
     });
 
     socket.on('finished-capturing', function () {
-        console.log("finished-capturing")
+        console.log('finished-capturing')
         sessionStorage.setItem('finished-capturing', 'true');
         window.location.replace('/')
     })
 
-    var constraints = {
+    let constraints = {
         video: {
             width: {min: 640},
             height: {min: 480}
