@@ -12,11 +12,18 @@
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
         crossorigin="anonymous"></script>
 
-<h2 id="title">Hi, Welcome to our Music Recommendation System</h2>
+<h2 id="title">Hi, Welcome to Emotion Music Recommendation System!</h2>
 
-<div id="playlist" style="width: 700px;">
+<div id="playlist" class="wrapper">
     <div class="container darker">
-        <p>Please Login to you Spotify account and allow us access to your Spotify playlist</p>
+        <div>
+            <h4>Thank you for spending time participating test for USC CSCI 534 class project.</h4>
+            <p>This project is aimed at recommending songs on Spotify to regulate your mood, which based on your prefered genre and current emotion.<br/>
+                e.g. Cheer you up when you are upset, calm you down when you are too excited.<br/><br/></p>
+            <h4>Step 1: Login your account</h4>
+            <p>To get start, our first step is to analyze your favorite genres from your Spotify playlists' info. Please click button below and follow process to authorize our access:<br/>
+            * All the data collected are for class study only, we are not going to save your account data.</p>
+        </div>
         <span class="time-right">
             <div class="authorizationBtn" onclick="login()">
                 Allow Access
@@ -25,28 +32,42 @@
     </div>
 </div>
 
-<div id="camera" style="display: none; width: 700px;">
+<div id="camera" class="wrapper" style="display: none;">
     <div class="container darker">
-        <p>Please allow access to your webcam</p>
+        <div>
+            <h4>Step 2: Emotion Recognition</h4>
+            <p>Our next step is to know about your current mood. Please read carefully about tips below:<br/><br/>
+            1. For better recognition rate, please make sure there is enough lighting on your face. Also, please face and <b>stay close</b> to your camera.<br/>
+            2. Every second an image would be captured and analyzed. After <b>10 pictures</b> are processed, it would end automatically.<br/>
+            3. Your detected emotion and valence/arousal are avaliable at right side of screen. Valence is an [0,1] value denotes your emotion is negative (low) or positive (high); whereas arousal means your emotion is intense or not.<br/><br/>
+            * Captured image are for emotion detection only, we are not going to save it either.</p>
+            <input id="instructionBox" type="checkbox"/><b> I have read all instructions below</b>
+            <div id="warning" style="color: red;"></div>
+        </div>
         <span class="time-right">
-            <div class="authorizationBtn">
-                <a class="cameraLink" href="{{ url_for('camera') }}">Start Recognition</a>
+            <div class="authorizationBtn" onclick="checkIfRead()">
+                Start Recognition
             </div>
         </span>
     </div>
 </div>
 
-<div id="recommendation" style="display: none; width: 700px;">
+<div id="recommendation" class="wrapper" style="display: none;">
     <div class="container darker">
-        <p>Recommendation result based on detected emotion and your favorite genre in playlist</p>
+        <h4>Recommendation results</h4>
+        <p>Here are recommended songs based on your info provided before. Hope you enjoy them!</p>
         <div id="recommendationTable" class="resultTable"></div>
     </div>
 </div>
 
-<div id="feedback" style="display: none; width: 700px;">
+<div id="feedback" class="wrapper" style="display: none; margin-top: 10px;">
     <div class="container darker">
-        <p>Please give us a feedback</p>
-        <span class="time-right"><button onclick="clickSix()"><a href="{{ url_for('camera') }}"></a></button></span>
+        <h4>Thank you again for participating our study! Please take another 2 minutes to tell us your experience:</h4>
+        <span class="time-right">
+            <div class="authorizationBtn"  onclick="finishTest()">
+                Give Feedback
+            </div>
+        </span>
     </div>
 </div>
 
@@ -69,13 +90,14 @@
     // login and capture finished, start recommendation
     if (ifLogin && ifCaptured) {
         document.querySelector('#recommendation').style.display = 'block';
+        document.querySelector('#feedback').style.display = 'block';
 
         // request server to get recommendation results
         let data = requestServer('/playlists');
 
-        let tableHtml = '<div class="tableRow"><span class="tableCell text-overflow">Name</span>\
-            <span class="tableCell text-overflow">Artists</span>\
-            <span class="tableCell text-overflow">Spotify URL</span></div>';
+        let tableHtml = '<div class="tableRow"><span class="tableCell text-overflow"><b>Name</b></span>\
+            <span class="tableCell text-overflow"><b>Artists</b></span>\
+            <span class="tableCell text-overflow"><b>Spotify URL</b></span></div>';
 
         for (obj of data) {
             let rowHtml = getRowHtml(obj.name, obj.artists, obj.url);
@@ -95,6 +117,25 @@
     function login() {
         let loginUrl = signInData.content;
         window.location.replace(loginUrl);
+    }
+
+    // check if user read instructions
+    function checkIfRead() {
+        let checkBox = document.querySelector('#instructionBox');
+        if (checkBox.checked) {
+            window.location.replace('http://' +  window.location.host + '/camera');
+        }
+        else {
+            let warning = document.querySelector('#warning');
+            warning.innerHTML = 'Please read instructions before continue.';
+        }
+    }
+
+    // jobs after finishing test
+    function finishTest() {
+        requestServer('/sign_out');
+        let surveyLink = '';
+        window.location.replace(surveyLink);
     }
 
     function requestServer(path) {

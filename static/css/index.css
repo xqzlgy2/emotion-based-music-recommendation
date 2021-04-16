@@ -1,7 +1,9 @@
 body {
+    text-align: center;
+}
+
+.wrapper {
     margin: 0 auto;
-    max-width: 800px;
-    padding: 0 5px;
 }
 
 .container {
@@ -9,7 +11,7 @@ body {
     background-color: #f1f1f1;
     border-radius: 5px;
     padding: 5px;
-    margin: 5px 0;
+    text-align: left;
 }
 
 .darker {
@@ -107,22 +109,12 @@ body {
 .authorizationBtn {
     transition-duration: 0.5s;
     background-color: #f1f1f1;
-    margin: 2px;
+    padding: 5px;
     border: 1px solid black;
     border-radius: 3px;
 }
 
 .authorizationBtn:hover { 
     background-color: #5FB55B;
-    color: white;
-}
-
-.cameraLink {
-    text-decoration: none;
-    color: black;
-}
-
-.cameraLink:hover {
-    text-decoration: none;
     color: white;
 }
