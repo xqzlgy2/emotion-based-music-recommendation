@@ -39,7 +39,6 @@ body {
 
 .time-right {
     float: right;
-    color: #aaa;
     border: 3px;
 }
 
@@ -103,4 +102,27 @@ body {
     align-items: center;
     border-bottom: 1px solid black;
     border-right: 1px solid black;
+}
+
+.authorizationBtn {
+    transition-duration: 0.5s;
+    background-color: #f1f1f1;
+    margin: 2px;
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+.authorizationBtn:hover { 
+    background-color: #5FB55B;
+    color: white;
+}
+
+.cameraLink {
+    text-decoration: none;
+    color: black;
+}
+
+.cameraLink:hover {
+    text-decoration: none;
+    color: white;
 }

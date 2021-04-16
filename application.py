@@ -60,14 +60,13 @@ def sign_in():
         session['uuid'] = str(uuid.uuid4())
     spotifyCacheAuth = SpotifyCacheAuth()
     if not spotifyCacheAuth.validate_token():
-        # display sign in link if no token provided
+        # return sign in link if no token provided
         auth_url = spotifyCacheAuth.auth_manager.get_authorize_url()
-        return f'<h2><a href="{auth_url}">Sign in</a></h2>'
+        return jsonify(data={'content': auth_url, 'isLogin': False})
 
-    # If signed in, display data
+    # If signed in, return user name
     spotify = spotipy.Spotify(auth_manager=spotifyCacheAuth.auth_manager)
-    return f'<h2>Hi {spotify.me()["display_name"]}, ' \
-           f'<small><a href="/sign_out">[sign out]<a/></small></h2>'
+    return jsonify(data={'content': spotify.me(), 'isLogin': True})
 
 
 @app.route('/sign_out')

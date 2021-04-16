@@ -11,32 +11,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-<h2>Hi, Welcome to our Music Recommendation System</h2>
+<h2 id="title">Hi, Welcome to our Music Recommendation System</h2>
 
 <div id="playlist" style="width: 700px;">
     <div class="container darker">
         <p>Please Login to you Spotify account and allow us access to your Spotify playlist</p>
-        <span class="time-right"><button><a href="{{ url_for('sign_in') }}">Allow access to Spotify Playlist</a></button></span>
+        <span class="time-right">
+            <div class="authorizationBtn" onclick="login()">
+                Allow Access
+            </div>
+        </span>
     </div>
 </div>
 
-<div id="camera" style="width: 700px;">
+<div id="camera" style="display: none; width: 700px;">
     <div class="container darker">
         <p>Please allow access to your webcam</p>
-        <span class="time-right"><button><a href="{{ url_for('camera') }}">Start emotion recognition</a></button></span>
+        <span class="time-right">
+            <div class="authorizationBtn">
+                <a class="cameraLink" href="{{ url_for('camera') }}">Start Recognition</a>
+            </div>
+        </span>
     </div>
 </div>
 
-<div id="recommendation" style="display: none;width: 700px;">
+<div id="recommendation" style="display: none; width: 700px;">
     <div class="container darker">
         <p>Recommendation result based on detected emotion and your favorite genre in playlist</p>
         <div id="recommendationTable" class="resultTable"></div>
     </div>
 </div>
 
-<div id="feedback" style="display: none;width: 700px;">
+<div id="feedback" style="display: none; width: 700px;">
     <div class="container darker">
         <p>Please give us a feedback</p>
         <span class="time-right"><button onclick="clickSix()"><a href="{{ url_for('camera') }}"></a></button></span>
@@ -44,17 +51,28 @@
 </div>
 
 <script type="text/javascript">
-    // emotion recognition finished, start recommendation
-    if (sessionStorage.getItem('finished-capturing') === 'true') {
+    // request server to get login state
+    let signInData = requestServer('/sign_in');
+
+    let ifLogin = signInData.isLogin;
+    let ifCaptured = sessionStorage.getItem('finished-capturing') === 'true';
+
+    // display capture step if user have logged in
+    if (ifLogin) {
+        let userName = signInData.content.display_name;
+        document.querySelector('#title').innerHTML = 'Hi,' + userName + '! Thank you for joining our test.';
+        document.querySelector('#playlist').style.display = 'none';
+
+        document.querySelector('#camera').style.display = ifCaptured ? 'none': 'block';
+    }
+
+    // login and capture finished, start recommendation
+    if (ifLogin && ifCaptured) {
         document.querySelector('#recommendation').style.display = 'block';
 
         // request server to get recommendation results
-        let response = $.ajax({
-            url: 'http://' +  window.location.host + '/playlists',
-            async: false
-        });
+        let data = requestServer('/playlists');
 
-        let data = response.responseJSON.data;
         let tableHtml = '<div class="tableRow"><span class="tableCell text-overflow">Name</span>\
             <span class="tableCell text-overflow">Artists</span>\
             <span class="tableCell text-overflow">Spotify URL</span></div>';
@@ -72,8 +90,21 @@
                  '</span><span class="tableCell text-overflow">' + artists +
                  '</span><span class="tableCell text-overflow"><a href="' + url + '" target="view_window">Click to listen</a></span></div>';
     }
-</script>
 
+    // get login url and redirect
+    function login() {
+        let loginUrl = signInData.content;
+        window.location.replace(loginUrl);
+    }
+
+    function requestServer(path) {
+        let response = $.ajax({
+            url: 'http://' +  window.location.host + path,
+            async: false
+        });
+        return response.responseJSON.data;
+    }
+</script>
 
 </body>
 </html>

@@ -33,9 +33,9 @@ $(document).ready(function () {
     });
 
     socket.on('finished-capturing', function () {
-        console.log('finished-capturing')
+        console.log('finished-capturing');
         sessionStorage.setItem('finished-capturing', 'true');
-        window.location.replace('/')
+        window.location.replace('/');
     })
 
     let constraints = {
