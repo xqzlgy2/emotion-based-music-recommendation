@@ -210,8 +210,7 @@ def get_detected_emotion():
 
     with open(path, 'r') as f:
         detected_emotion = json.load(f)
-        # normalize [-1,1] to [0,1]
-        return (detected_emotion['avg_valence'] + 1) / 2
+        return detected_emotion['avg_valence']
 
 
 @socketio.on('connect', namespace='/test')
