@@ -11,7 +11,7 @@ import cv2
 import numpy as np
 import spotipy
 import torch
-from flask import Flask, render_template, session, request, redirect
+from flask import Flask, render_template, session, request, redirect, jsonify
 from flask_session.__init__ import Session
 from flask_socketio import SocketIO, emit
 from scipy.special import softmax
@@ -92,7 +92,7 @@ def playlists():
     spotify = spotipy.Spotify(auth_manager=spotifyCacheAuth.auth_manager)
     track_ids = get_playlists_tracks(spotify)
     features = get_playlists_features(spotify, track_ids)
-    return str(features)
+    return jsonify(data=features)
 
 
 def get_playlists_tracks(spotify):
