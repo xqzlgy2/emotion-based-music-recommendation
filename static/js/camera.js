@@ -1,15 +1,20 @@
 $(document).ready(function () {
     let namespace = "/test";
-    let video = document.querySelector("#videoElement");
-    let canvas = document.querySelector("#canvasElement");
+    let video = document.getElementById("videoElement");
+    let canvas = document.getElementById("canvasElement");
     let ctx = canvas.getContext('2d');
     let photo = document.getElementById('photo');
     let emotion = document.getElementById("emotion");
     let valence = document.getElementById("valence");
     let arousal = document.getElementById("arousal");
     let captured = document.getElementById("captured");
-    let detection_error = document.getElementById("no-face-detected");
     let localMediaStream = null;
+    const urlParams = new URLSearchParams(window.location.search);
+    const show_face = urlParams.get("camera_on");
+
+    if (show_face === 'false') {
+        document.getElementById("container").style.display = 'none';
+    }
 
     let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
     let count_frame = 0;
