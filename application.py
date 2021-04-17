@@ -259,7 +259,7 @@ def test_message(data):
             image_data = base64.b64encode(buffer).decode('utf-8')
             emit('out-image-event', {'image': image_data, 'results': results}, namespace='/test')
     else:
-        emit('no-face-detected')
+        print("No face detected")
 
     if len(recorded_data[session.get('uuid')]['valence']) == target_length:
         with open(emotion_cache_folder + str(session.get('uuid')), 'w') as f:

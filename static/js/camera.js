@@ -32,7 +32,6 @@ $(document).ready(function () {
     socket.on('out-image-event', function (data) {
         count_frame += 1;
         captured.innerText = `Recorded ${count_frame}/10 frames`;
-        detection_error.style.display = "none";
         photo.setAttribute('src', "data:image/png;base64, " + data.image);
         emotion.innerText = `Emotion: ${data.results['emotion']}`;
         valence.innerText = `Valence: ${data.results['valence']}`;
@@ -44,10 +43,6 @@ $(document).ready(function () {
         count_frame = 0;
         sessionStorage.setItem('finished-capturing', 'true');
         window.location.replace('/');
-    })
-
-    socket.on('no-face-detected', function () {
-        detection_error.style.display = "block";
     })
 
     let constraints = {
