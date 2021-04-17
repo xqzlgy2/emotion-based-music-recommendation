@@ -14,7 +14,7 @@
 
 <h2 id="title">Hi, Welcome to Emotion Music Recommendation System!</h2>
 
-<div id="playlist" class="wrapper">
+<div id="playlist" class="wrapper"  style="display: none;">
     <div class="container darker">
         <div>
             <h4>Thank you for spending time participating test for USC CSCI 534 class project.</h4>
@@ -85,6 +85,9 @@
         document.querySelector('#playlist').style.display = 'none';
 
         document.querySelector('#camera').style.display = ifCaptured ? 'none': 'block';
+    }
+    else {
+        document.querySelector('#playlist').style.display = 'block';
     }
 
     // login and capture finished, start recommendation
