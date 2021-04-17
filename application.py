@@ -3,9 +3,9 @@ import json
 import logging
 import os
 import random
-from typing import Counter
 import uuid
 from sys import stdout
+from typing import Counter
 
 import cv2
 import numpy as np
@@ -18,8 +18,8 @@ from scipy.special import softmax
 
 from config import expressions, net, transform_image, detector, predictor, transform_image_shape_no_flip, \
     SpotifyCacheAuth, recorded_data, emotion_cache_folder, clear_recorded_data, caches_folder, target_length
-from utils import readb64, normalize
 from data_analyze.classifier import load_model
+from utils import readb64, normalize
 
 app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(stdout))
@@ -116,7 +116,7 @@ def get_playlists_features(spotify, track_ids):
 
     # limitation for track info is 50
     for idx in range(0, len(track_ids), 50):
-        end = min(idx+50, len(track_ids))
+        end = min(idx + 50, len(track_ids))
         slice = track_ids[idx: end]
         audio_features = spotify.audio_features(slice)
         tracks_info = spotify.tracks(slice)['tracks']
@@ -136,7 +136,7 @@ def get_playlists_features(spotify, track_ids):
 
     features = np.array(features)
     model = load_model('./models/genre_classifier.pkl')
-    
+
     # avoid exception of no playlist exists
     if len(features) != 0:
         genres = model.predict(features)
@@ -150,8 +150,8 @@ def get_playlists_features(spotify, track_ids):
 def build_vector(feature_dict):
     vec = []
     fields = ['acousticness', 'danceability', 'duration_ms', 'energy', 'instrumentalness',
-             'key', 'liveness', 'loudness', 'mode', 'popularity', 'speechiness', 'tempo', 'valence', 'year']
-    
+              'key', 'liveness', 'loudness', 'mode', 'popularity', 'speechiness', 'tempo', 'valence', 'year']
+
     for field in fields:
         vec.append(float(feature_dict[field]))
 
@@ -182,7 +182,8 @@ def get_recommendation(spotify, track_valences, genres, artists):
     api_response = None
     while not api_response:
         try:
-            api_response = spotify.recommendations(seed_genres=seed_spotify_genres, target_valence=target_valence, limit=10)
+            api_response = spotify.recommendations(seed_genres=seed_spotify_genres, target_valence=target_valence,
+                                                   limit=10)
         except spotipy.exceptions.SpotifyException:
             # if no song could be found, resample genres
             seed_spotify_genres = random.sample(seed_spotify_genres, min(top_num, len(seed_spotify_genres)))
@@ -247,9 +248,9 @@ def test_message(data):
             emotion_prob = softmax(emotion_raw)
             valence = normalize(float(output['valence'].detach().numpy()[0]))
             arousal = normalize(float(output['arousal'].detach().numpy()[0]))
-            results = {"emotion": "Emotion: "+expressions[np.argmax(emotion_prob)],
-                       "valence": "Valence: "+str(round(valence, 4)),
-                       "arousal": "Arousal: "+str(round(arousal, 4))}
+            results = {"emotion": expressions[np.argmax(emotion_prob)],
+                       "valence": str(round(valence, 4)),
+                       "arousal": str(round(arousal, 4))}
 
             recorded_data[session.get('uuid')]['valence'].append(valence)
             recorded_data[session.get('uuid')]['arousal'].append(arousal)
@@ -257,6 +258,8 @@ def test_message(data):
             ret, buffer = cv2.imencode('.png', frame)
             image_data = base64.b64encode(buffer).decode('utf-8')
             emit('out-image-event', {'image': image_data, 'results': results}, namespace='/test')
+    else:
+        emit('no-face-detected')
 
     if len(recorded_data[session.get('uuid')]['valence']) == target_length:
         with open(emotion_cache_folder + str(session.get('uuid')), 'w') as f:

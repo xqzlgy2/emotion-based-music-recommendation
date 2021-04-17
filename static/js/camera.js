@@ -7,9 +7,12 @@ $(document).ready(function () {
     let emotion = document.getElementById("emotion");
     let valence = document.getElementById("valence");
     let arousal = document.getElementById("arousal");
+    let captured = document.getElementById("captured");
+    let detection_error = document.getElementById("no-face-detected");
     let localMediaStream = null;
 
     let socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    let count_frame = 0;
 
     function sendSnapshot() {
         if (!localMediaStream) {
@@ -20,22 +23,31 @@ $(document).ready(function () {
         let dataURL = canvas.toDataURL("image/png");
         socket.emit('input image', {image: dataURL});
 
-        socket.on('out-image-event', function (data) {
-            photo.setAttribute('src', "data:image/png;base64, " + data.image);
-            emotion.innerText = data.results['emotion'];
-            valence.innerText = data.results['valence'];
-            arousal.innerText = data.results['arousal'];
-        });
     }
 
     socket.on('connect', function () {
         console.log('Connected!');
     });
 
+    socket.on('out-image-event', function (data) {
+        count_frame += 1;
+        captured.innerText = `Recorded ${count_frame}/10 frames`;
+        detection_error.style.display = "none";
+        photo.setAttribute('src', "data:image/png;base64, " + data.image);
+        emotion.innerText = `Emotion: ${data.results['emotion']}`;
+        valence.innerText = `Valence: ${data.results['valence']}`;
+        arousal.innerText = `Arousal: ${data.results['arousal']}`;
+    });
+
     socket.on('finished-capturing', function () {
         console.log('finished-capturing');
+        count_frame = 0;
         sessionStorage.setItem('finished-capturing', 'true');
         window.location.replace('/');
+    })
+
+    socket.on('no-face-detected', function () {
+        detection_error.style.display = "block";
     })
 
     let constraints = {

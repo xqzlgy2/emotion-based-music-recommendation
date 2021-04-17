@@ -18,7 +18,7 @@
     <div class="container darker">
         <div>
             <h4>Thank you for spending time participating test for USC CSCI 534 class project.</h4>
-            <p>This project is aimed at recommending songs on Spotify to regulate your mood, which based on your prefered genre and current emotion.<br/>
+            <p>This project is aimed at recommending songs on Spotify to regulate your mood, based on your preferred genre and current emotion.<br/>
                 e.g. Cheer you up when you are upset, calm you down when you are too excited.<br/><br/></p>
             <h4>Step 1: Login your account</h4>
             <p>To get start, our first step is to analyze your favorite genres from your Spotify playlists' info. Please click button below and follow process to authorize our access:<br/>
@@ -39,7 +39,7 @@
             <p>Our next step is to know about your current mood. Please read carefully about tips below:<br/><br/>
             1. For better recognition rate, please make sure there is enough lighting on your face. Also, please face and <b>stay close</b> to your camera.<br/>
             2. Every second an image would be captured and analyzed. After <b>10 pictures</b> are processed, it would end automatically.<br/>
-            3. Your detected emotion and valence/arousal are avaliable at right side of screen. Valence is an [0,1] value denotes your emotion is negative (low) or positive (high); whereas arousal means your emotion is intense or not.<br/><br/>
+            3. Your detected emotion and valence/arousal are available at right side of screen. Valence is an [0,1] value denotes your emotion is negative (low) or positive (high); whereas arousal means your emotion is intense or not.<br/><br/>
             * Captured image are for emotion detection only, we are not going to save it either.</p>
             <input id="instructionBox" type="checkbox"/><b> I have read all instructions below</b>
             <div id="warning" style="color: red;"></div>
@@ -55,14 +55,14 @@
 <div id="recommendation" class="wrapper" style="display: none;">
     <div class="container darker">
         <h4>Recommendation results</h4>
-        <p>Here are recommended songs based on your info provided before. Hope you enjoy them!</p>
+        <p>Here are the recommended songs based on your info provided before. Hope you enjoy them!</p>
         <div id="recommendationTable" class="resultTable"></div>
     </div>
 </div>
 
 <div id="feedback" class="wrapper" style="display: none; margin-top: 10px;">
     <div class="container darker">
-        <h4>Thank you again for participating our study! Please take another 2 minutes to tell us your experience:</h4>
+        <h4>Thank you again for participating in our study! Please take another 2 minutes to tell us your experience:</h4>
         <span class="time-right">
             <div class="authorizationBtn"  onclick="finishTest()">
                 Give Feedback
