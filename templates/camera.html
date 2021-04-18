@@ -6,31 +6,30 @@
     <meta content="Makeup Webcam" name="title">
     <title>Emotion Capture</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/camera.css') }}">
-</head>
-<body>
-<div id="container">
-    <video autoplay="true" id="videoElement"></video>
-    <div id="frames">
-        <canvas id="canvasElement"></canvas>
-        <img id="photo">
-    </div>
-
-    <div id="results">
-
-        <h3 id="emotion"></h3>
-        <h3 id="valence"></h3>
-        <h3 id="arousal"></h3>
-    </div>
-
-
-</div>
-<h3 id="captured"></h3>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
         integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
         crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
         integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
         crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+</head>
+<body>
+    <h1 id="captured"></h1>
+    <div id="container">
+        <div class="wrapper">
+            <video autoplay="true" id="videoElement" class="cell"></video>
+            <div id="frames" class="cell">
+                <canvas id="canvasElement"></canvas>
+                <img id="photo">
+            </div>
+        </div>
+        <div id="results" class="wrapper" style="width: 500px;">
+            <h3 id="emotion" class="cell"></h3>
+            <h3 id="valence" class="cell"></h3>
+            <h3 id="arousal" class="cell"></h3>
+        <div>
+    </div>
+</div>
 </body>
 </html>

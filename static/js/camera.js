@@ -36,7 +36,7 @@ $(document).ready(function () {
 
     socket.on('out-image-event', function (data) {
         count_frame += 1;
-        captured.innerText = `Recorded ${count_frame}/10 frames`;
+        captured.innerText = `${count_frame}/10 frames recorded`;
         photo.setAttribute('src', "data:image/png;base64, " + data.image);
         emotion.innerText = `Emotion: ${data.results['emotion']}`;
         valence.innerText = `Valence: ${data.results['valence']}`;
@@ -46,7 +46,12 @@ $(document).ready(function () {
     socket.on('finished-capturing', function () {
         console.log('finished-capturing');
         count_frame = 0;
-        sessionStorage.setItem('finished-capturing', 'true');
+        if (show_face === 'false') {
+            sessionStorage.setItem('finished-capturing-no-face', 'true');
+        }
+        else {
+            sessionStorage.setItem('finished-capturing', 'true');
+        }
         window.location.replace('/');
     })
 

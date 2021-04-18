@@ -77,9 +77,11 @@ def sign_out():
         os.remove(spotifyCacheAuth.session_cache_path())
         os.remove(emotion_cache_folder + str(session.get('uuid')))
         session.clear()
+        return jsonify(data={'success': True})
+
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
-    return redirect('/')
+        return jsonify(data={'success': False})
 
 
 @app.route('/playlists')
@@ -90,8 +92,8 @@ def playlists():
 
     spotify = spotipy.Spotify(auth_manager=spotifyCacheAuth.auth_manager)
     track_ids = get_playlists_tracks(spotify)
-    features = get_playlists_features(spotify, track_ids)
-    return jsonify(data=features)
+    results = get_playlists_features(spotify, track_ids)
+    return jsonify(data=results)
 
 
 def get_playlists_tracks(spotify):
@@ -190,7 +192,7 @@ def get_recommendation(spotify, track_valences, genres, artists):
 
     result = list(map(lambda x: extract_result_fields(x), api_response['tracks']))
 
-    return result
+    return {"songs": result, "detected_valence": round(user_valence, 3)}
 
 
 def extract_result_fields(info):

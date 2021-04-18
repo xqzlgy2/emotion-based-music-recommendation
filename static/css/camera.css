@@ -11,14 +11,12 @@
 
 body {
     background-color: #bbbbbb;
+    text-align: center;
 }
 
-#container {
-    margin-left: auto;
-    margin-right: auto;
+.wrapper {
+    display: -webkit-flex;
     display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 #videoElement {
@@ -59,4 +57,11 @@ body {
     margin-left: auto;
     margin-right: auto;
     align-content: center;
+}
+
+.cell {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
