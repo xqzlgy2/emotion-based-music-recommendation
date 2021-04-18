@@ -5,12 +5,13 @@
     <title>Emotion Based Music Recommendation</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 </head>
 
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
-        crossorigin="anonymous"></script>
 
 <h2 id="title">Hi, Welcome to Emotion Music Recommendation System!</h2>
 
@@ -25,7 +26,7 @@
             * All the data collected are for class study only, we are not going to save your account data.</p>
         </div>
         <span class="time-right">
-            <div class="authorizationBtn" onclick="login()">
+            <div id="playlistbtn" class="authorizationBtn">
                 Allow Access
             </div>
         </span>
@@ -46,7 +47,7 @@
             <div id="warning" style="color: red;"></div>
         </div>
         <span class="time-right">
-            <div class="authorizationBtn" onclick="checkIfRead()">
+            <div id="camerabtn" class="authorizationBtn">
                 Start Recognition
             </div>
         </span>
@@ -75,7 +76,7 @@
             <div id="warningNoFace" style="color: red;"></div>
         </div>
         <span class="time-right">
-            <div class="authorizationBtn" onclick="checkIfReadNoFace()">
+            <div id="cameranofacebtn" class="authorizationBtn">
                 Start Recognition
             </div>
         </span>
@@ -86,7 +87,7 @@
     <div class="container darker">
         <h4>Thank you again for participating in our study! Please take another 2 minutes to tell us your experience:</h4>
         <span class="time-right">
-            <div class="authorizationBtn"  onclick="finishTest()">
+            <div id="feedbackbtn" class="authorizationBtn">
                 Give Feedback
             </div>
         </span>
@@ -95,120 +96,12 @@
     <div class="container darker" style=" margin-top: 10px;">
         <h4>If you are unsatisfied with detection process, you can also try again:</h4>
         <span class="time-right">
-            <div class="authorizationBtn"  onclick="tryAgain()">
+            <div id="tryagainbtn" class="authorizationBtn">
                 Try Again
             </div>
         </span>
     </div>
 </div>
-
-<script type="text/javascript">
-    // request server to get login state
-    let signInData = requestServer('/sign_in');
-
-    let ifLogin = signInData.isLogin;
-    let ifCaptured = sessionStorage.getItem('finished-capturing') === 'true';
-    let ifCapturedNoFace = sessionStorage.getItem('finished-capturing-no-face') === 'true';
-
-    // display capture step if user have logged in
-    if (ifLogin) {
-        let userName = signInData.content.display_name;
-        document.querySelector('#title').innerHTML = 'Hi,' + userName + '! Thank you for joining our test.';
-        document.querySelector('#playlist').style.display = 'none';
-
-        document.querySelector('#camera').style.display = ifCaptured ? 'none': 'block';
-        document.querySelector('#cameranoface').style.display = !ifCaptured || ifCapturedNoFace ? 'none': 'block';
-    }
-    else {
-        document.querySelector('#playlist').style.display = 'block';
-    }
-
-    // login and capture finished, start recommendation
-    if (ifLogin && (ifCaptured || ifCapturedNoFace)) {
-        document.querySelector('#recommendation').style.display = 'block';
-        if (ifCaptured && ifCapturedNoFace) {
-            document.querySelector('#feedback').style.display = 'block';
-        }
-
-        // request server to get recommendation results
-        let data = requestServer('/playlists');
-        let songs = data.songs;
-        let valence = data.detected_valence;
-
-        let tableHtml = '<div class="tableRow"><span class="tableCell text-overflow"><b>Name</b></span>\
-            <span class="tableCell text-overflow"><b>Artists</b></span>\
-            <span class="tableCell text-overflow"><b>Spotify URL</b></span></div>';
-
-        for (obj of songs) {
-            let rowHtml = getRowHtml(obj.name, obj.artists, obj.url);
-            tableHtml += rowHtml;
-        }
-
-        document.querySelector('#recommendationTable').innerHTML = tableHtml;
-        document.querySelector('#valence').innerHTML = '<b>' + valence + '</b>';
-    }
-
-    function getRowHtml(name, artists, url) {
-        return '<div class="tableRow"><span class="tableCell text-overflow">' + name +
-                 '</span><span class="tableCell text-overflow">' + artists +
-                 '</span><span class="tableCell text-overflow"><a href="' + url + '" target="view_window">Click to listen</a></span></div>';
-    }
-
-    // get login url and redirect
-    function login() {
-        let loginUrl = signInData.content;
-        window.location.replace(loginUrl);
-    }
-
-    // check if user read instructions
-    function checkIfRead() {
-        let checkBox = document.querySelector('#instructionBox');
-        if (checkBox.checked) {
-            window.location.replace('http://' +  window.location.host + '/camera');
-        }
-        else {
-            let warning = document.querySelector('#warning');
-            warning.innerHTML = 'Please read instructions before continue.';
-        }
-    }
-
-    // check if user read instructions for second round
-    function checkIfReadNoFace() {
-        let checkBox = document.querySelector('#instructionBoxNoFace');
-        if (checkBox.checked) {
-            window.location.replace('http://' +  window.location.host + '/camera?camera_on=false');
-        }
-        else {
-            let warning = document.querySelector('#warningNoFace');
-            warning.innerHTML = 'Please read instructions before continue.';
-        }
-    }
-
-    // jobs after finishing test
-    function finishTest() {
-        clearUp();
-        window.location.replace(surveyLink);
-    }
-
-    // jobs before try again
-    function tryAgain() {
-        clearUp();
-        window.location.replace('/');
-    }
-
-    function clearUp() {
-        requestServer('/sign_out');
-        sessionStorage.clear();
-    }
-
-    function requestServer(path) {
-        let response = $.ajax({
-            url: 'http://' +  window.location.host + path,
-            async: false
-        });
-        return response.responseJSON.data;
-    }
-</script>
 
 </body>
 </html>

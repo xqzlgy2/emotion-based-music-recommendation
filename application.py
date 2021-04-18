@@ -192,7 +192,7 @@ def get_recommendation(spotify, track_valences, genres, artists):
 
     result = list(map(lambda x: extract_result_fields(x), api_response['tracks']))
 
-    return {"songs": result, "detected_valence": user_valence}
+    return {"songs": result, "detected_valence": round(user_valence, 3)}
 
 
 def extract_result_fields(info):
