@@ -56,7 +56,9 @@
 <div id="recommendation" class="wrapper" style="display: none;">
     <div class="container darker">
         <h4>Recommendation results</h4>
-        <p>Here are the recommended songs based on your info provided before. Hope you enjoy them!</p>
+        <p>Your average detected valence is: <span id="valence"></span><br/>
+            * valence is an value ranged from [0, 1] which represents your emotion. (0 -> most negative, 1 -> most positive)<br/><br/>
+            Below are recommended songs based on your info provided before. Hope you enjoy them!</p>
         <div id="recommendationTable" class="resultTable"></div>
     </div>
 </div>
@@ -130,17 +132,20 @@
 
         // request server to get recommendation results
         let data = requestServer('/playlists');
+        let songs = data.songs;
+        let valence = data.detected_valence;
 
         let tableHtml = '<div class="tableRow"><span class="tableCell text-overflow"><b>Name</b></span>\
             <span class="tableCell text-overflow"><b>Artists</b></span>\
             <span class="tableCell text-overflow"><b>Spotify URL</b></span></div>';
 
-        for (obj of data) {
+        for (obj of songs) {
             let rowHtml = getRowHtml(obj.name, obj.artists, obj.url);
             tableHtml += rowHtml;
         }
 
         document.querySelector('#recommendationTable').innerHTML = tableHtml;
+        document.querySelector('#valence').innerHTML = '<b>' + valence + '</b>';
     }
 
     function getRowHtml(name, artists, url) {
