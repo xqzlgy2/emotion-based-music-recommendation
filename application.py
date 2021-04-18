@@ -77,9 +77,11 @@ def sign_out():
         os.remove(spotifyCacheAuth.session_cache_path())
         os.remove(emotion_cache_folder + str(session.get('uuid')))
         session.clear()
+        return jsonify(data={'success': True})
+
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
-    return redirect('/')
+        return jsonify(data={'success': False})
 
 
 @app.route('/playlists')

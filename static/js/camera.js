@@ -46,7 +46,12 @@ $(document).ready(function () {
     socket.on('finished-capturing', function () {
         console.log('finished-capturing');
         count_frame = 0;
-        sessionStorage.setItem('finished-capturing', 'true');
+        if (show_face === 'false') {
+            sessionStorage.setItem('finished-capturing-no-face', 'true');
+        }
+        else {
+            sessionStorage.setItem('finished-capturing', 'true');
+        }
         window.location.replace('/');
     })
 

@@ -37,11 +37,12 @@
         <div>
             <h4>Step 2: Emotion Recognition</h4>
             <p>Our next step is to know about your current mood. Please read carefully about tips below:<br/><br/>
-            1. For better recognition rate, please make sure there is enough lighting on your face. Also, please face and <b>stay close</b> to your camera.<br/>
-            2. Every second an image would be captured and analyzed. After <b>10 pictures</b> are processed, it would end automatically.<br/>
-            3. Your detected emotion and valence/arousal are available at right side of screen. Valence is an [0,1] value denotes your emotion is negative (low) or positive (high); whereas arousal means your emotion is intense or not.<br/><br/>
+            1. Please show expression <b>corresponds to</b> your current mood as possible as you can. <br/>
+            2. For better recognition rate, please make sure there is enough lighting on your face. Also, please face and <b>stay close</b> to your camera.<br/>
+            3. Every second an image would be captured and analyzed. After <b>10 pictures</b> are processed, it would end automatically.<br/>
+            4. Your detected emotion and valence/arousal are available at right side of screen. Valence is an [0,1] value denotes your emotion is negative (low) or positive (high); whereas arousal means your emotion is intense or not.<br/><br/>
             * Captured image are for emotion detection only, we are not going to save it either.</p>
-            <input id="instructionBox" type="checkbox"/><b> I have read all instructions below</b>
+            <input id="instructionBox" type="checkbox"/><b> I have read all instructions above</b>
             <div id="warning" style="color: red;"></div>
         </div>
         <span class="time-right">
@@ -60,12 +61,40 @@
     </div>
 </div>
 
+<div id="cameranoface" class="wrapper" style="display: none; margin-top: 10px;">
+    <div class="container darker">
+        <div>
+            <h4>Step 3: Unconscious Emotion Recognition</h4>
+            <p>In order to evaluate if we can recommend songs successfully when people are unconscious, please complete second round of our test.<br/><br/>
+            1. For this part, you are going to repeat facial recognition part without seeing your face.<br/>
+            2. Just imagine a situation which brings you a kind of emotion and make your expression as <b>nature</b> as possible.<br/>
+            3. After recognition finished, you will see recommendation based on detection of this stage.</p>
+            <input id="instructionBoxNoFace" type="checkbox"/><b> I have read all instructions above</b>
+            <div id="warningNoFace" style="color: red;"></div>
+        </div>
+        <span class="time-right">
+            <div class="authorizationBtn" onclick="checkIfReadNoFace()">
+                Start Recognition
+            </div>
+        </span>
+    </div>
+</div>
+
 <div id="feedback" class="wrapper" style="display: none; margin-top: 10px;">
     <div class="container darker">
         <h4>Thank you again for participating in our study! Please take another 2 minutes to tell us your experience:</h4>
         <span class="time-right">
             <div class="authorizationBtn"  onclick="finishTest()">
                 Give Feedback
+            </div>
+        </span>
+    </div>
+
+    <div class="container darker" style=" margin-top: 10px;">
+        <h4>If you are unsatisfied with detection process, you can also try again:</h4>
+        <span class="time-right">
+            <div class="authorizationBtn"  onclick="tryAgain()">
+                Try Again
             </div>
         </span>
     </div>
@@ -77,6 +106,7 @@
 
     let ifLogin = signInData.isLogin;
     let ifCaptured = sessionStorage.getItem('finished-capturing') === 'true';
+    let ifCapturedNoFace = sessionStorage.getItem('finished-capturing-no-face') === 'true';
 
     // display capture step if user have logged in
     if (ifLogin) {
@@ -85,15 +115,18 @@
         document.querySelector('#playlist').style.display = 'none';
 
         document.querySelector('#camera').style.display = ifCaptured ? 'none': 'block';
+        document.querySelector('#cameranoface').style.display = !ifCaptured || ifCapturedNoFace ? 'none': 'block';
     }
     else {
         document.querySelector('#playlist').style.display = 'block';
     }
 
     // login and capture finished, start recommendation
-    if (ifLogin && ifCaptured) {
+    if (ifLogin && (ifCaptured || ifCapturedNoFace)) {
         document.querySelector('#recommendation').style.display = 'block';
-        document.querySelector('#feedback').style.display = 'block';
+        if (ifCaptured && ifCapturedNoFace) {
+            document.querySelector('#feedback').style.display = 'block';
+        }
 
         // request server to get recommendation results
         let data = requestServer('/playlists');
@@ -134,11 +167,33 @@
         }
     }
 
+    // check if user read instructions for second round
+    function checkIfReadNoFace() {
+        let checkBox = document.querySelector('#instructionBoxNoFace');
+        if (checkBox.checked) {
+            window.location.replace('http://' +  window.location.host + '/camera?camera_on=false');
+        }
+        else {
+            let warning = document.querySelector('#warningNoFace');
+            warning.innerHTML = 'Please read instructions before continue.';
+        }
+    }
+
     // jobs after finishing test
     function finishTest() {
-        requestServer('/sign_out');
-        let surveyLink = '';
+        clearUp();
         window.location.replace(surveyLink);
+    }
+
+    // jobs before try again
+    function tryAgain() {
+        clearUp();
+        window.location.replace('/');
+    }
+
+    function clearUp() {
+        requestServer('/sign_out');
+        sessionStorage.clear();
     }
 
     function requestServer(path) {
