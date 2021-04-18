@@ -36,7 +36,7 @@ $(document).ready(function () {
 
     socket.on('out-image-event', function (data) {
         count_frame += 1;
-        captured.innerText = `Recorded ${count_frame}/10 frames`;
+        captured.innerText = `${count_frame}/10 frames recorded`;
         photo.setAttribute('src', "data:image/png;base64, " + data.image);
         emotion.innerText = `Emotion: ${data.results['emotion']}`;
         valence.innerText = `Valence: ${data.results['valence']}`;
