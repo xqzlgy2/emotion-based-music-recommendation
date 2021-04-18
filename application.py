@@ -274,5 +274,5 @@ def test_message(data):
 
 if __name__ == '__main__':
     # openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
-    socketio.run(app, host='0.0.0.0', keyfile='/etc/letsencrypt/live/emotionbasedmusicredommendation.xyz/cert.pem',
-                 certfile='/etc/letsencrypt/live/emotionbasedmusicredommendation.xyz/privkey.pem')
+    socketio.run(app, host='0.0.0.0', certfile='/etc/letsencrypt/live/emotionbasedmusicrecommendation.xyz/cert.pem',
+                 keyfile='/etc/letsencrypt/live/emotionbasedmusicrecommendation.xyz/privkey.pem')
