@@ -271,4 +271,5 @@ def test_message(data):
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0')
+    # openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
+    socketio.run(app, host='0.0.0.0', ssl_context=('/etc/letsencrypt/live/emotionbasedmusicredommendation.xyz/cert.pem', '/etc/letsencrypt/live/emotionbasedmusicredommendation.xyz/privkey.pem'))
