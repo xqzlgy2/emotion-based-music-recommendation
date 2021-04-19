@@ -172,6 +172,8 @@ def get_recommendation(spotify, track_valences, genres, artists):
     target_valence = 1 - user_valence
 
     seed_genres = list(map(lambda x: x[0], top_genres))
+    if len(seed_genres) == 0:
+        seed_genres = ["Pop"]
     seed_spotify_genres = []
 
     # map dataset label to spotify genres, do random selection
