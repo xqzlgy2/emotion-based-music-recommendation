@@ -1,6 +1,7 @@
 import dlib
 import spotipy
 import torch
+import json
 from flask import session
 from torchvision import transforms
 
@@ -33,9 +34,6 @@ predictor = dlib.shape_predictor("models/shape_predictor_68_face_landmarks.dat")
 
 # START -- config for Spotipy --
 caches_folder = './.spotify_caches/'
-SPOTIPY_CLIENT_ID = 'dde4e2ccdb1a4498aef96198f319a1e8'
-SPOTIPY_CLIENT_SECRET = '8f9c59120ab949828c5936c751878797'
-SPOTIPY_REDIRECT_URI = 'http://localhost:5000'
 
 
 class SpotifyCacheAuth:
@@ -44,15 +42,20 @@ class SpotifyCacheAuth:
         return caches_folder + str(session.get('uuid'))
 
     def __init__(self):
+        config = self.load_config()
         self.cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=self.session_cache_path())
         self.auth_manager = spotipy.oauth2.SpotifyOAuth(
             scope='playlist-read-private playlist-modify-private app-remote-control user-read-currently-playing',
             cache_handler=self.cache_handler,
             show_dialog=True,
-            client_id=SPOTIPY_CLIENT_ID,
-            client_secret=SPOTIPY_CLIENT_SECRET,
-            redirect_uri=SPOTIPY_REDIRECT_URI)
+            client_id=config["SPOTIPY_CLIENT_ID"],
+            client_secret=config["SPOTIPY_CLIENT_SECRET"],
+            redirect_uri=config["SPOTIPY_REDIRECT_URI"])
 
     def validate_token(self):
         return self.auth_manager.validate_token(self.cache_handler.get_cached_token())
+    
+    def load_config(self):
+        with open('config.json') as f:
+            return json.load(f)
 # END ---------------------------------------------------

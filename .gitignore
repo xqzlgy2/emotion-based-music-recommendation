@@ -98,3 +98,4 @@ venv.bak/
 /site
 .spotify_caches
 .emotion_caches
+config.json

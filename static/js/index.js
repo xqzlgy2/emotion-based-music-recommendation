@@ -7,6 +7,7 @@ $(document).ready(function () {
     document.getElementById("tryagainbtn").addEventListener("click", tryAgain);
 
     // request server to get login state
+    let surveyLink = 'https://docs.google.com/forms/d/e/1FAIpQLSeqkaOha0hPnI0pyMk-ZfR3HpWrxNrVEgYfgJpdbaj652Z2wQ/viewform';
     let signInData = requestServer('/sign_in');
 
     let ifLogin = signInData.isLogin;
