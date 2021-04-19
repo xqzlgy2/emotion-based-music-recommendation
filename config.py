@@ -56,6 +56,6 @@ class SpotifyCacheAuth:
         return self.auth_manager.validate_token(self.cache_handler.get_cached_token())
     
     def load_config(self):
-        with open('config.json') as f:
+        with open('./config.json', 'r') as f:
             return json.load(f)
 # END ---------------------------------------------------

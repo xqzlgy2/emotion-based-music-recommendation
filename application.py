@@ -239,10 +239,9 @@ def test_message(data):
         landmarks = np.array(landmarks)
         bounding_box = [landmarks.min(axis=0)[0], landmarks.min(axis=0)[1], landmarks.max(axis=0)[0],
                         landmarks.max(axis=0)[1]]
-        frame, landmarks = transform_image_shape_no_flip(frame, bb=bounding_box)
-
-        frame = np.ascontiguousarray(frame)
-        tensor = transform_image(frame).reshape(1, 3, 256, 256)
+        image, landmarks = transform_image_shape_no_flip(frame, bb=bounding_box)
+        image = np.ascontiguousarray(image)
+        tensor = transform_image(image).reshape(1,3,256,256)
         tensor = tensor.to('cpu')
         with torch.no_grad():
             output = net(tensor)
