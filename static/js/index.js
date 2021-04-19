@@ -67,7 +67,7 @@ $(document).ready(function () {
     function checkIfRead() {
         let checkBox = document.getElementById('instructionBox');
         if (checkBox.checked) {
-            window.location.replace('http://' +  window.location.host + '/camera');
+            window.location.replace(window.location.protocol + '//' +  window.location.host + '/camera');
         }
         else {
             let warning = document.getElementById('warning');
@@ -79,7 +79,7 @@ $(document).ready(function () {
     function checkIfReadNoFace() {
         let checkBox = document.getElementById('instructionBoxNoFace');
         if (checkBox.checked) {
-            window.location.replace('http://' +  window.location.host + '/camera?camera_on=false');
+            window.location.replace(window.location.protocol + '//' +  window.location.host + '/camera?camera_on=false');
         }
         else {
             let warning = document.getElementById('warningNoFace');
@@ -106,7 +106,7 @@ $(document).ready(function () {
 
     function requestServer(path) {
         let response = $.ajax({
-            url: 'http://' +  window.location.host + path,
+            url: window.location.protocol + '//' +  window.location.host + path,
             async: false
         });
         return response.responseJSON.data;
